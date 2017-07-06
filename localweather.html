@@ -1,37 +1,24 @@
+<DOCTYPE html>
 <html>
     <head>
         </head>
     <body>
-        <p><button onclick="geoFindMe()">Show my location</button></p>
-        <div id="out"></div>
+        
     </body>
 <script>
-function geoFindMe() {
-  var output = document.getElementById("out");
+  const ipApi= "http://ip-api.com/json";
+  const weatherApi = "http://api.openweathermap.org/data/2.5/weather?q=";
 
-  if (!navigator.geolocation){
-    output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
-    return;
+  fetch(ipApi)
+  .then(blob =>blob.json())
+  .then(json => fetchWeather(json));
+
+  function fetchWeather(json) {
+    const city = json.city;
+    const state = json.country;
+    const endpoint = weatherApi + city + ',' +state+'&APPID='+'8ff4f5edab5466efff65dc10fc58dec9';
+    fetch(endpoint)
+    .then(blob => blob.json())
+    .then(json => console.log(json));
   }
-
-  function success(position) {
-    var latitude  = position.coords.latitude;
-    var longitude = position.coords.longitude;
-
-    output.innerHTML = '<p>Latitude is ' + latitude + '° <br>Longitude is ' + longitude + '°</p>';
-
-    var img = new Image();
-    img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=13&size=300x300&sensor=false";
-
-    output.appendChild(img);
-  }
-
-  function error() {
-    output.innerHTML = "Unable to retrieve your location";
-  }
-
-  output.innerHTML = "<p>Locating…</p>";
-
-  navigator.geolocation.getCurrentPosition(success, error);
-}
 </script>
