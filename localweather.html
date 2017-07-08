@@ -3,7 +3,7 @@
     <head>
         </head>
     <body>
-        
+        <img src="https://openweathermap.org/img/w/03d.png">
     </body>
 <script>
   const ipApi= "http://ip-api.com/json";
@@ -11,14 +11,15 @@
 
   fetch(ipApi)
   .then(blob =>blob.json())
-  .then(json => fetchWeather(json));
+  .then(json => composeWeatherEndpoint(json))
+  .then(api => fetchWeather(api));
 
-  function fetchWeather(json) {
-    const city = json.city;
-    const state = json.country;
-    const endpoint = weatherApi + city + ',' +state+'&APPID='+'8ff4f5edab5466efff65dc10fc58dec9';
-    fetch(endpoint)
+  function fetchWeather(api) {
+    fetch(api)
     .then(blob => blob.json())
     .then(json => console.log(json));
   }
+
+  const composeWeatherEndpoint = json =>
+    `http://api.openweathermap.org/data/2.5/weather?lat=${json.lat}&lon=${json.lon}&APPID=8ff4f5edab5466efff65dc10fc58dec9`;
 </script>
