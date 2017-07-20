@@ -13,24 +13,45 @@
             align-items: center;
             flex-direction: column;
           }
+
+          .container {
+            display:flex;
+            flex-direction: column;
+          }
+          .fa-check {
+            color: green;
+          }
+          .info{
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          }
+          .info > * {
+            margin:0;
+          }
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
-      <div class="iconContainer">
-          <i class="fa fa-2x fa-spinner fa-pulse"></i>
+      <i class="fa fa-2x fa-spinner fa-pulse"></i>
+
+      <div class="container">
+          <p id="location"></p>
       </div>
-      <img id="weatherImg" src="">
-      <p id="location"></p>
+      
     </body>
 <script>
   const ipApi= "http://ip-api.com/json";
   const weatherApi = "http://api.openweathermap.org/data/2.5/weather?q=";
 
   const icon = document.querySelector('i');
-  const iconContainer = document.querySelector('.iconContainer');
+  const container = document.querySelector('.container');
   const userLocation = document.querySelector('#location');
-  const weatherImg = document.querySelector('#weatherImg');
+  //const weatherImg = document.querySelector('#weatherImg');
+  const celsiusToFarenheit = celsius => celsius*9/5+32;
+
+  var celsius = true;
   
   fetch(ipApi)
   .then(blob =>blob.json())
@@ -47,15 +68,26 @@
   function fetchWeather(api) {
     fetch(api)
     .then(blob => blob.json())
-    .then(json => json.weather[0])
     .then(weather => changeIcon(weather))
     .catch(e => error(e));
   }
 
-  function changeIcon (weather) {
-    iconContainer.removeChild(icon);
-    weatherImg.setAttribute('src', `https://openweathermap.org/img/w/${weather.icon}.png`);
-    
+  function changeIcon (json) {
+    const infoDiv = createInfoDiv(json);
+    container.innerHTML += infoDiv;
+    icon.classList.remove('fa-spinner','fa-pulse');
+    icon.classList.add('fa-check');    
+  }
+
+  function createInfoDiv(json) {
+    const weather = json.weather[0]; 
+    const celsius = Math.floor(json.main.temp);
+    const weatherDiv = `<div class="info">
+                        <img src="https://openweathermap.org/img/w/${weather.icon}.png">
+                        <p>${weather.description}</p>
+                        <p>${celsius}°C</p>
+                        </div>`;
+    return weatherDiv;
   }
 
   function error (err) {
@@ -65,5 +97,5 @@
   }
 
   const composeWeatherEndpoint = json =>
-    `http://api.openweathermap.org/data/2.5/weather?lat=${json.lat}&lon=${json.lon}&APPID=8ff4f5edab5466efff65dc10fc58dec9`;
+    `http://api.openweathermap.org/data/2.5/weather?lat=${json.lat}&lon=${json.lon}&APPID=8ff4f5edab5466efff65dc10fc58dec9&units=metric`;
 </script>
