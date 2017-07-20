@@ -5,13 +5,12 @@
           html, body {
             margin: 0;
             padding: 0;
+             height: 100vh;
           }
           body {
             display: flex;
-          }
-          .container {
-            flex: 1;
-            text-align: center;
+            justify-content: center;
+            align-items: center;
           }
 
           .icon {
@@ -23,18 +22,15 @@
           .visible {
             display: inline-block;
           }
-          i .material-icons {
-            font-size: 10rem;
-            color:red;
+          .fa-sun-o {
+          color: yellow;
           }
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
       <div class="container">
-        <i class="fa fa-4x"></i>
+          <i class="fa fa-4x fa-spinner fa-spin"></i>
       </div>
     </body>
 <script>
