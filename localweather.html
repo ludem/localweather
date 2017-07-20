@@ -11,47 +11,57 @@
             display: flex;
             justify-content: center;
             align-items: center;
-          }
-
-          .icon {
-            display: none;
-            width: 10rem;
-            height: 10rem;
-          }
-
-          .visible {
-            display: inline-block;
-          }
-          .fa-sun-o {
-          color: yellow;
+            flex-direction: column;
           }
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
-      <div class="container">
-          <i class="fa fa-4x fa-spinner fa-spin"></i>
+      <div class="iconContainer">
+          <i class="fa fa-2x fa-spinner fa-pulse"></i>
       </div>
+      <img id="weatherImg" src="">
+      <p id="location"></p>
     </body>
 <script>
   const ipApi= "http://ip-api.com/json";
   const weatherApi = "http://api.openweathermap.org/data/2.5/weather?q=";
 
+  const icon = document.querySelector('i');
+  const iconContainer = document.querySelector('.iconContainer');
+  const userLocation = document.querySelector('#location');
+  const weatherImg = document.querySelector('#weatherImg');
+  
   fetch(ipApi)
   .then(blob =>blob.json())
+  .then(json => updateLocation(json))
   .then(json => composeWeatherEndpoint(json))
-  .then(api => fetchWeather(api));
+  .then(api => fetchWeather(api))
+  .catch(e => error());
+
+  function updateLocation(json) {
+    userLocation.innerText = `Your location: ${json.city}, ${json.country}`;
+    return json;
+  }
 
   function fetchWeather(api) {
     fetch(api)
     .then(blob => blob.json())
     .then(json => json.weather[0])
-    .then(weather => changeIcon(weather));
+    .then(weather => changeIcon(weather))
+    .catch(e => error(e));
   }
 
   function changeIcon (weather) {
-    const icon = document.querySelector('i');
-    icon.classList.add('fa-sun-o');
+    iconContainer.removeChild(icon);
+    weatherImg.setAttribute('src', `https://openweathermap.org/img/w/${weather.icon}.png`);
+    
+  }
+
+  function error (err) {
+    console.log(err);
+    icon.classList.remove('fa-pulse','fa-spinner');
+    icon.classList.add('fa-exclamation-triangle');
   }
 
   const composeWeatherEndpoint = json =>
