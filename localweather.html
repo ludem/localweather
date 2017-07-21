@@ -56,23 +56,22 @@
     </body>
 <script>
   const ipApi= "http://ip-api.com/json";
-  const weatherApi = "http://api.openweathermap.org/data/2.5/weather?q=";
-
   const icon = document.querySelector('i');
   const container = document.querySelector('.container');
   const celsiusToFarenheit = celsius => celsius*9/5+32;
   const farenheitToCelsius = far => (far-32)*5/9;
   var city, country;
 
+  const composeWeatherEndpoint = json =>
+    `https://fcc-weather-api.glitch.me/api/current?lat=${json.latitude}&lon=${json.longitude}`;
+
+
   onInit();
 
 function onInit() {
-  fetch(ipApi)
-  .then(blob =>blob.json())
-  .then(json => updateLocation(json))
-  .then(json => composeWeatherEndpoint(json))
-  .then(api => fetchWeather(api))
-  .catch(e => error());
+  geoFindMe()
+  .then(position => composeWeatherEndpoint(position))
+  .then(endpoint => fetchWeather(endpoint));
 }
   
 function updateLocation(json) {
@@ -84,11 +83,11 @@ function updateLocation(json) {
   function fetchWeather(api) {
     fetch(api)
     .then(blob => blob.json())
-    .then(weather => changeIcon(weather))
+    .then(weather => changeDOM(weather))
     .catch(e => error(e));
   }
 
-  function changeIcon (json) {
+  function changeDOM (json) {
     const infoDiv = createInfoDiv(json);
     container.innerHTML += infoDiv;
     const unit = document.querySelector('#unit');
@@ -100,8 +99,8 @@ function updateLocation(json) {
   function createInfoDiv(json) {
     const weather = json.weather[0]; 
     const celsius = Math.floor(json.main.temp);
-    const weatherDiv = `<img src="https://openweathermap.org/img/w/${weather.icon}.png">
-                        <p>${city}, ${country}</p>
+    const weatherDiv = `<img src="${weather.icon}">
+                        <p>${json.name}</p>
                         <p>${weather.description}</p>
                         <p><span id="temp">${celsius}</span>° <span id = "unit">C</span></p>
                   `;
@@ -129,6 +128,22 @@ function updateLocation(json) {
     return "<p class='footer'>Can't fetch weather information. Please <a href=''>retry</a></p>"
   }
 
-  const composeWeatherEndpoint = json =>
-    `http://api.openweathermap.org/data/2.5/weather?q=${json.city},${json.countryCode}&APPID=8ff4f5edab5466efff65dc10fc58dec9&units=metric`;
+  function geoFindMe(callback) {
+    var promise = new Promise(function(resolve, reject) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position){
+                    resolve(position.coords)
+                }
+            );
+        } else {
+          reject("Unknown");
+        }
+    });
+
+    return promise;
+}
+
+
+
 </script>
