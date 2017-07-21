@@ -5,7 +5,10 @@
           html, body {
             margin: 0;
             padding: 0;
-             height: 100vh;
+            height: 100vh;
+            font-family: 'Bitter', serif;
+            background: oldlace;
+
           }
           body {
             display: flex;
@@ -23,20 +26,33 @@
           .container > * {
             margin:0;
           }
-          .fa-check {
-            color: green;
+         
+          .header, .footer {
+				    font-size: 0.7rem;
+				    color:silver;
+			    }
+
+          #unit {
+            cursor: pointer;
+            text-decoration: underline;
+            color: darkblue;
+          }
+
+          .fa {
+              margin: 0.5rem 0;
           }
           
         </style>
+        <link href='http://fonts.googleapis.com/css?family=Bitter' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
+      <div class=title>
+			  <h1 class="header">"Weather App" by <a href="https://codepen.io/ludem/" target="_tab">ludem</a></h1>
+		  </div>
       <i class="fa fa-2x fa-spinner fa-pulse"></i>
-
       <div class="container">
-          <p id="location"></p>
-      </div>
-      
+      </div>     
     </body>
 <script>
   const ipApi= "http://ip-api.com/json";
@@ -44,20 +60,22 @@
 
   const icon = document.querySelector('i');
   const container = document.querySelector('.container');
-  //const userLocation = document.querySelector('#location');
-  //const weatherImg = document.querySelector('#weatherImg');
   const celsiusToFarenheit = celsius => celsius*9/5+32;
   const farenheitToCelsius = far => (far-32)*5/9;
   var city, country;
 
+  onInit();
+
+function onInit() {
   fetch(ipApi)
   .then(blob =>blob.json())
   .then(json => updateLocation(json))
   .then(json => composeWeatherEndpoint(json))
   .then(api => fetchWeather(api))
   .catch(e => error());
-
-  function updateLocation(json) {
+}
+  
+function updateLocation(json) {
     city = json.city;
     country = json.country;
     return json;
@@ -95,6 +113,7 @@
     console.log(err);
     icon.classList.remove('fa-pulse','fa-spinner');
     icon.classList.add('fa-exclamation-triangle');
+    container.innerHTML += createRefreshLink();
   }
 
   function changeUnit () {
@@ -104,6 +123,10 @@
       this.innerHTML = 'F';
     } else {temp.innerHTML = farenheitToCelsius(temp.innerHTML);
       this.innerHTML = 'C';}
+  }
+
+  function createRefreshLink() {
+    return "<p class='footer'>Can't fetch weather information. Please <a href=''>retry</a></p>"
   }
 
   const composeWeatherEndpoint = json =>
