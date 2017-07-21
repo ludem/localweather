@@ -17,19 +17,16 @@
           .container {
             display:flex;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          }
+          .container > * {
+            margin:0;
           }
           .fa-check {
             color: green;
           }
-          .info{
-            display:flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-          }
-          .info > * {
-            margin:0;
-          }
+          
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
@@ -47,12 +44,12 @@
 
   const icon = document.querySelector('i');
   const container = document.querySelector('.container');
-  const userLocation = document.querySelector('#location');
+  //const userLocation = document.querySelector('#location');
   //const weatherImg = document.querySelector('#weatherImg');
   const celsiusToFarenheit = celsius => celsius*9/5+32;
+  const farenheitToCelsius = far => (far-32)*5/9;
+  var city, country;
 
-  var celsius = true;
-  
   fetch(ipApi)
   .then(blob =>blob.json())
   .then(json => updateLocation(json))
@@ -61,7 +58,8 @@
   .catch(e => error());
 
   function updateLocation(json) {
-    userLocation.innerText = `Your location: ${json.city}, ${json.country}`;
+    city = json.city;
+    country = json.country;
     return json;
   }
 
@@ -75,18 +73,21 @@
   function changeIcon (json) {
     const infoDiv = createInfoDiv(json);
     container.innerHTML += infoDiv;
+    const unit = document.querySelector('#unit');
+    unit.addEventListener('click', changeUnit);
     icon.classList.remove('fa-spinner','fa-pulse');
-    icon.classList.add('fa-check');    
+    icon.parentElement.removeChild(icon);
   }
 
   function createInfoDiv(json) {
     const weather = json.weather[0]; 
     const celsius = Math.floor(json.main.temp);
-    const weatherDiv = `<div class="info">
-                        <img src="https://openweathermap.org/img/w/${weather.icon}.png">
+    const weatherDiv = `<img src="https://openweathermap.org/img/w/${weather.icon}.png">
+                        <p>${city}, ${country}</p>
                         <p>${weather.description}</p>
-                        <p>${celsius}°C</p>
-                        </div>`;
+                        <p><span id="temp">${celsius}</span>° <span id = "unit">C</span></p>
+                  `;
+    
     return weatherDiv;
   }
 
@@ -96,6 +97,15 @@
     icon.classList.add('fa-exclamation-triangle');
   }
 
+  function changeUnit () {
+    const temp = document.querySelector('#temp');
+    if (this.innerHTML === 'C') {
+      temp.innerHTML = celsiusToFarenheit(temp.innerHTML);
+      this.innerHTML = 'F';
+    } else {temp.innerHTML = farenheitToCelsius(temp.innerHTML);
+      this.innerHTML = 'C';}
+  }
+
   const composeWeatherEndpoint = json =>
-    `http://api.openweathermap.org/data/2.5/weather?lat=${json.lat}&lon=${json.lon}&APPID=8ff4f5edab5466efff65dc10fc58dec9&units=metric`;
+    `http://api.openweathermap.org/data/2.5/weather?q=${json.city},${json.countryCode}&APPID=8ff4f5edab5466efff65dc10fc58dec9&units=metric`;
 </script>
