@@ -5,9 +5,10 @@
           html, body {
             margin: 0;
             padding: 0;
-            height: 100vh;
-            font-family: 'Bitter', serif;
-            background: oldlace;
+            height: 100%;
+            font-size: 5vmin;
+            font-family: 'Ubuntu Condensed', serif;
+            background: whitesmoke;
 
           }
           body {
@@ -41,9 +42,15 @@
           .fa {
               margin: 0.5rem 0;
           }
+
+          .weatherImg {
+            filter:grayscale(100%);
+            width: 5rem;
+            height: auto;
+          }
           
         </style>
-        <link href='http://fonts.googleapis.com/css?family=Bitter' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Ubuntu+Condensed|Bitter' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
@@ -99,7 +106,7 @@ function updateLocation(json) {
   function createInfoDiv(json) {
     const weather = json.weather[0]; 
     const celsius = Math.floor(json.main.temp);
-    const weatherDiv = `<img src="${weather.icon}">
+    const weatherDiv = `<img class="weatherImg" src="${weather.icon}">
                         <p>${json.name}</p>
                         <p>${weather.description}</p>
                         <p><span id="temp">${celsius}</span>° <span id = "unit">C</span></p>
